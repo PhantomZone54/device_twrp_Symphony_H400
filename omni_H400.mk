@@ -19,10 +19,10 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
 
 PRODUCT_COPY_FILES += device/Symphony/H400/prebuilt/zImage:kernel
 
-PRODUCT_DEVICE := Primo_RX5
-PRODUCT_NAME := omni_Primo_RX5
+PRODUCT_DEVICE := H400
+PRODUCT_NAME := omni_H400
 PRODUCT_BRAND := Symphony
-PRODUCT_MODEL := Primo_RX5
+PRODUCT_MODEL := H400
 PRODUCT_MANUFACTURER := Symphony
 
 # Ramdisk
