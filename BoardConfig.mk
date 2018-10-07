@@ -73,6 +73,9 @@ BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x03f88000 --tags_offset 0x0df88000
 TARGET_BOARD_SUFFIX := _64
 TARGET_USES_64_BIT_BINDER := true
 
+# Flip screen
+BOARD_HAS_FLIPPED_SCREEN := true
+
 PB_OFFICIAL := false
 
 include device/generic/twrpbuilder/BoardConfig64.mk
