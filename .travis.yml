@@ -1,0 +1,63 @@
+os: linux
+dist: xenial
+sudo: required
+git:
+  depth: 3
+addons:
+  apt:
+    update:
+    - true
+    packages:
+    - wput
+env:
+  global:
+    - secure: "ZCfVZ1I024wD9q5v4tIl5PaLhI8qJIQeQDkh1yQ7g5p6xyVXDSvgYUFsywek2GiWZRpny2UtPOdSFKwejtIAOSTtd+0og1CzgRu+fGRZokPeV4atYSD+vAqLnEWtM2rrA6K6WNL+GcYVkvfjoY+plTiacCi8htujrB7de4Tlqfw0WA54OfOwJm8lMSgcl3DKvcUHDaeFmF92Hyxum7NWt+/vWlR3ewkW7GZqsAZjbPJhT5QnAwUnXCz71qxQ0JgBR94wEgzGJkDPYCvjY9bPRMPIAc7NQTUmfW6XzlAHm3WbiyEdd/SQ7iOyEDUc5jaqUTCkniTj9R37hI4aFpEokOKccShuvUM091lVuUUmIUlywNU0OxX3sb87/pAUQo0okYnuJFTrhCUkAM9mULpNVfvO2alKnciEiPbI1wnjjHbvaT7Y2JTC/3ChFSHvPGAo/kUjyc9wRrJ+y2bFDdUMI//MBC3EB5rUceRFCblxqLPqajmQpmA8JNSl1R7qZLrhq9dE2IYJZrjpTzX7sDjVdCJyN8elFr5C46eaxxUuzgCk8+Opt3OTkEqVW345WZ3ySI9GzZZbeM6mtS3WTnTN/ly5PWsZId9FSN1TMntDBvXw+T46Qzox6K5b0OhgX+nuQkBVz2eugoUQHvdm8EQJ4PuDxfjboxc1MRU7rWiVQLU="
+    - secure: "YBhg8uaJBS+vN3LlzW7A02swQhUE7ZoHgyyC1ylFIy7qfzkT7+hQaFYA/8DS2gS1f+WRDVo2C0XFbo/a5gX78teDu/KlB2zyfFc1IZgp9rzSeL0WHKecnoFfXD8AfHVDl4K10RuQ0DGNQXQPlh4q9mgtudSigPiO2mQ6StMbn/YXa6o8Gw2R7AsUSZS4QBkiWJaMdu8eLApEOfZBTcKNSwnrFKA37PhjFPxzxQzARrIf+dYq0VbooezdnCta+3rlLxlabFMRdbtN6CGWTMwzkHzh0sfZu9R66glFKkOdaLQlq8/xuan24cMby39ZVws8d3V5SrkIJWe+Jzz3c19OYOvazjd/ODewHfBchGMIl0fYaLJFQoTXlD5MwleRTp625D5jiw2DxMzQZE79lzan4hIojhviZFpwjvmlNsjRTxCGNPz9h5m3Otq3SbzW6erRcaXbK/k1TpxhkN7Afns4G+OkhiS+U8MGYj2toFbE/xrbDX/DXVJDKE/I8i0+K/3TH5pVERQ6PidViXlcYtVGy07GadhEHV2wlzdxzvdyoqjWHjT+hru2QxXoS08OzoC8eMODrN7X9LoynmJrw3aXSKhEDdMxZaOCWZoWtjCnRIXNRAbkTPSfFPs9aQ22frMIsp0yRlk3+70JXUG9xRH7dYhYiLiIwTQlsSha6cVoZfI="
+    - secure: "tIbVBXjht7c7yTZnPx41OlE0pHbG078Rav137oGJXwMAFESZOKVlioYVrQ05REJ2LBDG2yhXUfyos5dxq0JHhFK8oZp8EriRASorrb+S4eNC4z00LM039WqAmu9Pf6bNICmnLiGidyGF8oxOG5cTNfQiUQzfg5RvTyncTov/Gg4T1JTYK91vAMjH44FaVmscBg0Z0p6kv3zW+GLUMg53SgjBfE++L0KsHAIJBSKNZwDuRnpzjl3eyT8J7AB1zjmy/NcrTlya2XY5al2aMaWxDCC0HygtxP+iXdpaCiNOZD4rOl0i3mDjV6+hs/XzvM0ghWuFxcf1NBjLEOoBEPMq21ZuNjQ3iNm2DYDsYaGA0eXKfInHQa4upeRSsbpmDTX3n6/wPWtXmjtsQblciWIYJqt/4bXAzAy+pGTYMOBDGAOPf/gfA5pAuI4VxavnQOqbOeMDTGyC5QyIzMcEiCaaP8ALMoRtqwWIwVuu2MRSAIv5S3bl3FbUXHmOqGUp0EssokrR6NRRqm7BW+POHDr5C3HmImB1PR7dga4Rshk+d5L/gEGui4e6xh5H+wI9EeYY+0ULag/q1lWSSnmVJpAIiCOCNvHb6JIF4byr7+xo8ofRcFaVuasgVNt8wWQAfIJ3x4RQ3FSicgi7YqJbPiruHRmoV3TQlfqiFEYIxc/nE0c="
+services:
+  - docker
+before_install:
+  - docker pull yshalsager/cyanogenmod:latest
+before_script:
+  - cd $HOME && mkdir twrp
+  - wget -q https://github.com/rokibhasansagar/twrp_compressed_sources/releases/download/untagged-dc754938ac0301298f20/PitchBlack-Recovery-master-norepo-20181001.tar.xz
+    -O $HOME/twrp.tar.xz
+  - tar -xJf twrp.tar.xz --directory $HOME/twrp/ && rm twrp.tar.xz
+  - rm twrp/vendor/pb/pb_build.sh
+  - wget https://gist.githubusercontent.com/rokibhasansagar/81f8278671c12205e7d1a54776717899/raw/5a04578fb290baf4794a88eab0e580c70354476b/pb_build.sh -O twrp/vendor/pb/pb_build.sh
+  - chmod a+x twrp/vendor/pb/pb_build.sh
+script:
+  - cd $HOME/twrp/ && git clone https://github.com/PhantomZone54/device_twrp_Symphony_H400.git -b pbrp device/Symphony/H400
+  - git clone https://github.com/ZeoRexDevs/device_generic_mtk_twrpbuilder device/generic/twrpbuilder
+  - |
+    docker run --rm -i -e USER_ID=$(id -u) -e GROUP_ID=$(id -g) -v "$(pwd):/home/cmbuild/twrp/:rw,z" yshalsager/cyanogenmod bash << EOF
+    cd /home/cmbuild/twrp/
+    source build/envsetup.sh && lunch omni_H400-eng && mka recoveryimage
+    exit
+    EOF
+after_success:
+  - cd $HOME/twrp/
+  - cp out/target/product/H400/PitchBlack-*.zip .
+  - curl -s --upload-file PitchBlack-*.zip https://transfer.sh/ && echo ""
+  - wput PitchBlack-*.zip ftp://"$FTPUser":"$FTPPass"@"$FTPHost"//PBTWBuild-$(date +%Y%m%d-%H%M)/
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    secure: "qbae9OGkgVlK0p9vOgSg560iEgxdzaFk22FJPVbXf/n2VTz97WiZ+4PwunFmPt1czLiwRSXSwd6rPzZnu5UTtvyEhehOiiFxf9GaoFwVcWmjLQWc/9tQNtG2qNmRE3KlyTYHQv/wJAzLED6NXtYLnR6lMnz6kZmhMOhU01BDbJKbEQ4VAT9bWXvLiqXEeMt0fxXZii8WayvX8CaxlN6KYYASd+srKC/QYu+xvQScgzcIAylalgL+faRXYvyDhLk3aPI6ccmK+2Jad+/6ANjlvzo7q8ZT6wI0v4i9K1AfwA0kTTQIFELZMlYCzbNVCS4abVa+yHQBcX4b/K7FA+09zmOckusgPNq5v8PQOkYxCnGBNWxBCAGjjjaT6/ywR06uMAA4FHB8ReJMUVCl4Qwbylmj6C5WTNzqVJy5F96jLT/rqUqQdlykreYqYqYz/tP6ZZrcdNwnjYYkmLbZ02x/EQ21L792hzua7/KWpXbxoPkq9qqh/EA+qSeDkmOpJ5GRzBGj6Dq4VnXf4eMfSN6XI5yGOFp4hYQRrfuL1RmI3yZ8N7ZxlG+aRVIE2AYaZAh/GRxztzEM1xZ8dtRf9wcOIh2CgfXibQFPGa1HKs57k1w9dbgBrV2HqkbAsPHuV7px4RZ8CyoUtPghzTCwkltRVEZRCJydwImsV9lPAE3Ay2s="
+  file_glob: true
+  file: $HOME/twrp/PitchBlack-*.zip
+  on:
+    tags: false
+    repo: PhantomZone54/device_twrp_Symphony_H400
+    branch: pbrp
+branches:
+  only:
+  - master
+  - pbrp
+  except:
+  - /^(?i:untagged)-.*$/
+  - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+notifications:
+  email:
+  - rokibhasansagar2014@outlook.com
