@@ -20,11 +20,11 @@ before_install:
   - docker pull yshalsager/cyanogenmod:latest
 before_script:
   - cd $HOME && mkdir twrp
-  - wget -q https://github.com/rokibhasansagar/twrp_compressed_sources/releases/download/untagged-dc754938ac0301298f20/PitchBlack-Recovery-master-norepo-20181001.tar.xz
+  - wget -q https://github.com/rokibhasansagar/twrp_compressed_sources/releases/download/untagged-4456e70678f8d0971735/PitchBlackRecoveryProject-master-norepo-20181124.tar.xz
     -O $HOME/twrp.tar.xz
   - tar -xJf twrp.tar.xz --directory $HOME/twrp/ && rm twrp.tar.xz
   - rm twrp/vendor/pb/pb_build.sh
-  - wget https://gist.githubusercontent.com/rokibhasansagar/81f8278671c12205e7d1a54776717899/raw/5a04578fb290baf4794a88eab0e580c70354476b/pb_build.sh -O twrp/vendor/pb/pb_build.sh
+  - wget https://gist.githubusercontent.com/rokibhasansagar/99eafe64e3a5c3ac2883aa559527c9fe/raw/4ce508d8da1432bdef6a6d32b737a0a9e450dd4e/pb_build.sh -O twrp/vendor/pb/pb_build.sh
   - chmod a+x twrp/vendor/pb/pb_build.sh
 script:
   - cd $HOME/twrp/ && git clone https://github.com/PhantomZone54/device_twrp_Symphony_H400.git -b pbrp device/Symphony/H400
