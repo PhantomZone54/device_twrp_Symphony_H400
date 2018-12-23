@@ -20,7 +20,7 @@ before_install:
   - docker pull yshalsager/cyanogenmod:latest
 before_script:
   - cd $HOME && mkdir twrp
-  - wget -q https://github.com/rokibhasansagar/twrp_compressed_sources/releases/download/untagged-4456e70678f8d0971735/PitchBlackRecoveryProject-master-norepo-20181124.tar.xz
+  - wget -q https://github.com/rokibhasansagar/twrp_compressed_sources/releases/download/untagged-4456e70678f8d0971735/PitchBlackRecoveryProject-master-norepo-20181223.tar.xz
     -O $HOME/twrp.tar.xz
   - tar -xJf twrp.tar.xz --directory $HOME/twrp/ && rm twrp.tar.xz
   - rm twrp/vendor/pb/pb_build.sh
