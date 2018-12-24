@@ -26,10 +26,10 @@ before_script:
   - rm twrp/vendor/pb/pb_build.sh
   - wget https://gist.githubusercontent.com/rokibhasansagar/99eafe64e3a5c3ac2883aa559527c9fe/raw/4ce508d8da1432bdef6a6d32b737a0a9e450dd4e/pb_build.sh -O twrp/vendor/pb/pb_build.sh
   - chmod a+x twrp/vendor/pb/pb_build.sh
-  - cd bootable/recovery/ && wget -q 'https://transfer.sh/get/MumWb/efs2_fix.patch'
-  - git apply 'efs2_fix.patch' && rm -f 'efs2_fix.patch' && cd ../../
 script:
   - cd $HOME/twrp/ && git clone https://github.com/PhantomZone54/device_twrp_Symphony_H400.git -b pbrp device/Symphony/H400
+  - cd bootable/recovery/ && wget -q 'https://transfer.sh/get/MumWb/efs2_fix.patch'
+  - git apply 'efs2_fix.patch' && rm -f 'efs2_fix.patch' && cd ../../
   - git clone https://github.com/ZeoRexDevs/device_generic_mtk_twrpbuilder device/generic/twrpbuilder
   - |
     docker run --rm -i -e USER_ID=$(id -u) -e GROUP_ID=$(id -g) -v "$(pwd):/home/cmbuild/twrp/:rw,z" yshalsager/cyanogenmod bash << EOF
