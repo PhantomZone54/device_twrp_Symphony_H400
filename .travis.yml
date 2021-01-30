@@ -1,14 +1,17 @@
 os: linux
-dist: xenial
-sudo: required
+dist: focal
+group: edge
+language: generic
 git:
-  depth: 3
+  depth: 2
 addons:
   apt:
     update:
     - true
     packages:
     - wput
+    - aria2
+    - zstd
 env:
   global:
     - secure: "ZCfVZ1I024wD9q5v4tIl5PaLhI8qJIQeQDkh1yQ7g5p6xyVXDSvgYUFsywek2GiWZRpny2UtPOdSFKwejtIAOSTtd+0og1CzgRu+fGRZokPeV4atYSD+vAqLnEWtM2rrA6K6WNL+GcYVkvfjoY+plTiacCi8htujrB7de4Tlqfw0WA54OfOwJm8lMSgcl3DKvcUHDaeFmF92Hyxum7NWt+/vWlR3ewkW7GZqsAZjbPJhT5QnAwUnXCz71qxQ0JgBR94wEgzGJkDPYCvjY9bPRMPIAc7NQTUmfW6XzlAHm3WbiyEdd/SQ7iOyEDUc5jaqUTCkniTj9R37hI4aFpEokOKccShuvUM091lVuUUmIUlywNU0OxX3sb87/pAUQo0okYnuJFTrhCUkAM9mULpNVfvO2alKnciEiPbI1wnjjHbvaT7Y2JTC/3ChFSHvPGAo/kUjyc9wRrJ+y2bFDdUMI//MBC3EB5rUceRFCblxqLPqajmQpmA8JNSl1R7qZLrhq9dE2IYJZrjpTzX7sDjVdCJyN8elFr5C46eaxxUuzgCk8+Opt3OTkEqVW345WZ3ySI9GzZZbeM6mtS3WTnTN/ly5PWsZId9FSN1TMntDBvXw+T46Qzox6K5b0OhgX+nuQkBVz2eugoUQHvdm8EQJ4PuDxfjboxc1MRU7rWiVQLU="
@@ -19,20 +22,24 @@ services:
 before_install:
   - docker pull yshalsager/cyanogenmod:latest
 before_script:
-  - cd $HOME && mkdir twrp
-  - wget -q https://github.com/rokibhasansagar/twrp_compressed_sources/releases/download/untagged-4456e70678f8d0971735/PitchBlackRecoveryProject-master-norepo-20181223.tar.xz
-    -O $HOME/twrp.tar.xz
-  - tar -xJf twrp.tar.xz --directory $HOME/twrp/ && rm twrp.tar.xz
-  - rm twrp/vendor/pb/pb_build.sh
-  - wget https://gist.githubusercontent.com/rokibhasansagar/99eafe64e3a5c3ac2883aa559527c9fe/raw/4ce508d8da1432bdef6a6d32b737a0a9e450dd4e/pb_build.sh -O twrp/vendor/pb/pb_build.sh
-  - chmod a+x twrp/vendor/pb/pb_build.sh
+  - cd $HOME && mkdir -p $HOME/twrp
+  - aria2c -x16 -s8 --console-log-level=warn --summary-interval=0 --check-certificate=false
+    https://github.com/PhantomZone54/pbrp_compressed_sources/releases/download/TWRPv3.4.0-20201211/PitchBlackRecoveryProject-master-norepo-20201211.tzst
+    -o twrp.tzst || wget -q --show-progress --progress=bar:force --no-check-certificate
+    https://github.com/PhantomZone54/pbrp_compressed_sources/releases/download/TWRPv3.4.0-20201211/PitchBlackRecoveryProject-master-norepo-20201211.tzst
+    -O twrp.tzst
+  - cd $HOME/twrp
+  - tar --zstd -xf ../twrp.tzst && rm $HOME/twrp.tzst
 script:
-  - cd $HOME/twrp/ && git clone https://github.com/PhantomZone54/device_twrp_Symphony_H400.git -b pbrp device/Symphony/H400
-  - cd bootable/recovery/ && wget -q 'https://transfer.sh/get/MumWb/efs2_fix.patch'
-  - git apply 'efs2_fix.patch' && rm -f 'efs2_fix.patch' && cd ../../
+  - cd $HOME/twrp/ && git clone https://github.com/PhantomZone54/device_twrp_Symphony_H400.git -b pbrp --depth 1 device/Symphony/H400
+  #- cd bootable/recovery/ && wget -q 'https://transfer.sh/get/MumWb/efs2_fix.patch'
+  #- git apply 'efs2_fix.patch' && rm -f 'efs2_fix.patch' && cd ../../
   - git clone https://github.com/ZeoRexDevs/device_generic_mtk_twrpbuilder device/generic/twrpbuilder
   - |
     docker run --rm -i -e USER_ID=$(id -u) -e GROUP_ID=$(id -g) -v "$(pwd):/home/cmbuild/twrp/:rw,z" yshalsager/cyanogenmod bash << EOF
+    export DEBIAN_FRONTEND=noninteractive
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+    apt-get -qqy update && apt-get -qqy upgrade
     cd /home/cmbuild/twrp/
     source build/envsetup.sh && lunch omni_H400-eng && mka recoveryimage
     exit
@@ -40,12 +47,12 @@ script:
 after_success:
   - cd $HOME/twrp/
   - cp out/target/product/H400/PitchBlack-*.zip .
-  - curl -s --upload-file PitchBlack-*.zip https://transfer.sh/ && echo ""
+  - { curl -s --upload-file PitchBlack-*.zip https://transfer.sh/; echo ""; } || true
   - wput PitchBlack-*.zip ftp://"$FTPUser":"$FTPPass"@"$FTPHost"//PBTWBuild-$(date +%Y%m%d-%H%M)/
 deploy:
-  skip_cleanup: true
+  cleanup: false
   provider: releases
-  api_key:
+  token:
     secure: "qbae9OGkgVlK0p9vOgSg560iEgxdzaFk22FJPVbXf/n2VTz97WiZ+4PwunFmPt1czLiwRSXSwd6rPzZnu5UTtvyEhehOiiFxf9GaoFwVcWmjLQWc/9tQNtG2qNmRE3KlyTYHQv/wJAzLED6NXtYLnR6lMnz6kZmhMOhU01BDbJKbEQ4VAT9bWXvLiqXEeMt0fxXZii8WayvX8CaxlN6KYYASd+srKC/QYu+xvQScgzcIAylalgL+faRXYvyDhLk3aPI6ccmK+2Jad+/6ANjlvzo7q8ZT6wI0v4i9K1AfwA0kTTQIFELZMlYCzbNVCS4abVa+yHQBcX4b/K7FA+09zmOckusgPNq5v8PQOkYxCnGBNWxBCAGjjjaT6/ywR06uMAA4FHB8ReJMUVCl4Qwbylmj6C5WTNzqVJy5F96jLT/rqUqQdlykreYqYqYz/tP6ZZrcdNwnjYYkmLbZ02x/EQ21L792hzua7/KWpXbxoPkq9qqh/EA+qSeDkmOpJ5GRzBGj6Dq4VnXf4eMfSN6XI5yGOFp4hYQRrfuL1RmI3yZ8N7ZxlG+aRVIE2AYaZAh/GRxztzEM1xZ8dtRf9wcOIh2CgfXibQFPGa1HKs57k1w9dbgBrV2HqkbAsPHuV7px4RZ8CyoUtPghzTCwkltRVEZRCJydwImsV9lPAE3Ay2s="
   file_glob: true
   file: $HOME/twrp/PitchBlack-*.zip
@@ -60,6 +67,3 @@ branches:
   except:
   - /^(?i:untagged)-.*$/
   - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
-notifications:
-  email:
-  - rokibhasansagar2014@outlook.com
