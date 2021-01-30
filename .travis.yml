@@ -24,38 +24,42 @@ before_install:
 before_script:
   - cd $HOME && mkdir -p $HOME/twrp
   - aria2c -x16 -s8 --console-log-level=warn --summary-interval=0 --check-certificate=false
-    https://github.com/PhantomZone54/pbrp_compressed_sources/releases/download/TWRPv3.4.0-20201211/PitchBlackRecoveryProject-master-norepo-20201211.tzst
+    https://github.com/PhantomZone54/pbrp_compressed_sources/releases/download/TWRPv3.5.0-20210130/PitchBlackRecoveryProject-master-norepo-20210130.tzst
     -o twrp.tzst || wget -q --show-progress --progress=bar:force --no-check-certificate
-    https://github.com/PhantomZone54/pbrp_compressed_sources/releases/download/TWRPv3.4.0-20201211/PitchBlackRecoveryProject-master-norepo-20201211.tzst
+    https://github.com/PhantomZone54/pbrp_compressed_sources/releases/download/TWRPv3.5.0-20210130/PitchBlackRecoveryProject-master-norepo-20210130.tzst
     -O twrp.tzst
   - cd $HOME/twrp
   - tar --zstd -xf ../twrp.tzst && rm $HOME/twrp.tzst
+  - chmod +x vendor/utils/pb_build.sh vendor/pb/pb_build.sh
 script:
   - cd $HOME/twrp/ && git clone https://github.com/PhantomZone54/device_twrp_Symphony_H400.git -b pbrp --depth 1 device/Symphony/H400
-  #- cd bootable/recovery/ && wget -q 'https://transfer.sh/get/MumWb/efs2_fix.patch'
-  #- git apply 'efs2_fix.patch' && rm -f 'efs2_fix.patch' && cd ../../
   - git clone https://github.com/ZeoRexDevs/device_generic_mtk_twrpbuilder device/generic/twrpbuilder
   - |
     docker run --rm -i -e USER_ID=$(id -u) -e GROUP_ID=$(id -g) -v "$(pwd):/home/cmbuild/twrp/:rw,z" yshalsager/cyanogenmod bash << EOF
     export DEBIAN_FRONTEND=noninteractive
     rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
-    apt-get -qqy update && apt-get -qqy upgrade
+    apt-get -qqy update &>/dev/null && apt-get -qqy upgrade &>/dev/null
     cd /home/cmbuild/twrp/
-    source build/envsetup.sh && lunch omni_H400-eng && mka recoveryimage
+    source build/envsetup.sh && lunch omni_H400-eng
+    mka recoveryimage
     exit
     EOF
 after_success:
   - cd $HOME/twrp/
-  - cp out/target/product/H400/PitchBlack-*.zip .
-  - curl -s --upload-file PitchBlack-*.zip https://transfer.sh/ || true
-  - wput PitchBlack-*.zip ftp://"$FTPUser":"$FTPPass"@"$FTPHost"//PBTWBuild-$(date +%Y%m%d-%H%M)/
+  - cp out/target/product/H400/PBRP-*.zip .
+  - cp out/target/product/H400/recovery.img .
+  - ls -lAog *.zip *.img
+  - curl -s --upload-file PBRP-*.zip https://transfer.sh/ || true
+  - wput PBRP-*.zip ftp://"$FTPUser":"$FTPPass"@"$FTPHost"//PBTWBuild-$(date +%Y%m%d-%H%M)/
 deploy:
   cleanup: false
   provider: releases
   token:
     secure: "qbae9OGkgVlK0p9vOgSg560iEgxdzaFk22FJPVbXf/n2VTz97WiZ+4PwunFmPt1czLiwRSXSwd6rPzZnu5UTtvyEhehOiiFxf9GaoFwVcWmjLQWc/9tQNtG2qNmRE3KlyTYHQv/wJAzLED6NXtYLnR6lMnz6kZmhMOhU01BDbJKbEQ4VAT9bWXvLiqXEeMt0fxXZii8WayvX8CaxlN6KYYASd+srKC/QYu+xvQScgzcIAylalgL+faRXYvyDhLk3aPI6ccmK+2Jad+/6ANjlvzo7q8ZT6wI0v4i9K1AfwA0kTTQIFELZMlYCzbNVCS4abVa+yHQBcX4b/K7FA+09zmOckusgPNq5v8PQOkYxCnGBNWxBCAGjjjaT6/ywR06uMAA4FHB8ReJMUVCl4Qwbylmj6C5WTNzqVJy5F96jLT/rqUqQdlykreYqYqYz/tP6ZZrcdNwnjYYkmLbZ02x/EQ21L792hzua7/KWpXbxoPkq9qqh/EA+qSeDkmOpJ5GRzBGj6Dq4VnXf4eMfSN6XI5yGOFp4hYQRrfuL1RmI3yZ8N7ZxlG+aRVIE2AYaZAh/GRxztzEM1xZ8dtRf9wcOIh2CgfXibQFPGa1HKs57k1w9dbgBrV2HqkbAsPHuV7px4RZ8CyoUtPghzTCwkltRVEZRCJydwImsV9lPAE3Ay2s="
   file_glob: true
-  file: $HOME/twrp/PitchBlack-*.zip
+  file:
+    - $HOME/twrp/PBRP-*.zip
+    - $HOME/twrp/recovery.img
   on:
     tags: false
     repo: PhantomZone54/device_twrp_Symphony_H400
