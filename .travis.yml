@@ -47,7 +47,7 @@ script:
 after_success:
   - cd $HOME/twrp/
   - cp out/target/product/H400/PitchBlack-*.zip .
-  - { curl -s --upload-file PitchBlack-*.zip https://transfer.sh/; echo ""; } || true
+  - curl -s --upload-file PitchBlack-*.zip https://transfer.sh/ || true
   - wput PitchBlack-*.zip ftp://"$FTPUser":"$FTPPass"@"$FTPHost"//PBTWBuild-$(date +%Y%m%d-%H%M)/
 deploy:
   cleanup: false
