@@ -20,7 +20,7 @@ env:
 services:
   - docker
 before_install:
-  - docker pull fr3akyphantom/droid-builder:focal
+  - docker pull yshalsager/cyanogenmod:latest
 before_script:
   - cd $HOME && mkdir -p $HOME/twrp
   - aria2c -x16 -s8 --console-log-level=warn --summary-interval=0 --check-certificate=false
@@ -32,15 +32,15 @@ before_script:
   - tar --zstd -xf ../twrp.tzst && rm $HOME/twrp.tzst
 script:
   - cd $HOME/twrp
-  - chown -R $whoami .
   - git clone https://github.com/PhantomZone54/device_twrp_Symphony_H400.git -b master --depth 1 device/Symphony/H400
+  - if [ ! -f device/Symphony/H400/omni.dependencies ]; then echo -e "[\n]" > device/Symphony/H400/omni.dependencies; fi
   - rm -rf bootable/recovery && git clone https://github.com/TeamWin/android_bootable_recovery -b android-9.0 --depth 1 bootable/recovery
   - git clone https://github.com/ZeoRexDevs/device_generic_mtk_twrpbuilder device/generic/twrpbuilder
   - |
-    docker run --rm -i --user builder -v "$HOME/.ccache:/srv/ccache:rw" -v "$(pwd):/home/builder/twrp:rw,z" fr3akyphantom/droid-builder:focal bash << EOF
-    cd /home/builder/twrp
-    chown -R $whoami .
-    ls -lA
+    docker run --rm -i -e USER_ID=$(id -u) -e GROUP_ID=$(id -g) -v "$(pwd):/home/cmbuild/twrp/:rw,z" yshalsager/cyanogenmod bash << EOF
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get -qqy update && apt-get -qqy upgrade
+    cd /home/cmbuild/twrp/
     source build/envsetup.sh
     lunch omni_H400-eng
     make -j$(nproc --all) recoveryimage
@@ -69,6 +69,3 @@ branches:
   except:
   - /^(?i:untagged)-.*$/
   - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
-notifications:
-  email:
-  - rokibhasansagar2014@outlook.com
